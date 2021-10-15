@@ -6,3 +6,8 @@ assets.cpp:
   assets/no-image.png:
     name: asset_no_image
 
+  assets/spritesheet.png:
+    name: asset_platformer
+
+  assets/map.tmx:
+    name: asset_tilemap

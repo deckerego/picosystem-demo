@@ -1,49 +1,27 @@
 #include "game.hpp"
+#include "assets.hpp"
 
 using namespace blit;
 
-///////////////////////////////////////////////////////////////////////////
-//
-// init()
-//
-// setup your game here
-//
+TileMap* environment;
+
 void init() {
     set_screen_mode(ScreenMode::hires);
+
+    screen.sprites = Surface::load(asset_platformer);
+    environment = new TileMap((uint8_t*)asset_tilemap, nullptr, Size(64, 64), screen.sprites);
 }
 
-///////////////////////////////////////////////////////////////////////////
-//
-// render(time)
-//
-// This function is called to perform rendering of the game. time is the 
-// amount if milliseconds elapsed since the start of your game
-//
-void render(uint32_t time) {
-
-    // reset the screen alpha and clipping mask
+void render(uint32_t time) { // millis elapsed since start
+    // reset everything to defaults
     screen.alpha = 255;
     screen.mask = nullptr;
-
-    // clear the screen -- screen is a reference to the frame buffer and can be used to draw all things with the 32blit
     screen.pen = Pen(0, 0, 0);
     screen.clear();
 
-    // draw a white rectangle
-    screen.pen = Pen(255, 255, 255);
-    screen.rectangle(Rect(0, 0, 320, 14));
-
-    // draw some black text
-    screen.pen = Pen(0, 0, 0);
-    screen.text("Hello PicoSystem!", minimal_font, Point(5, 4));
+    environment->draw(&screen, Rect(0, 0, 240, 240), nullptr);
 }
 
-///////////////////////////////////////////////////////////////////////////
-//
-// update(time)
-//
-// This is called to update your game state. time is the 
-// amount if milliseconds elapsed since the start of your game
-//
-void update(uint32_t time) {
+// time is millis elapsed since the start of your game
+void update(uint32_t time) { // millis elapsed since start
 }

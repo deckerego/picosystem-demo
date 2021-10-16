@@ -22,6 +22,14 @@ void render(uint32_t time) { // millis elapsed since start
     environment->draw(&screen, Rect(0, 0, 240, 240), nullptr);
 }
 
-// time is millis elapsed since the start of your game
 void update(uint32_t time) { // millis elapsed since start
+  int16_t x_offset = 0;
+  int16_t y_offset = 0;
+
+  if (buttons.pressed & Button::DPAD_LEFT)  x_offset = -5;
+  if (buttons.pressed & Button::DPAD_RIGHT) x_offset = 5;
+  if (buttons.pressed & Button::DPAD_DOWN)  y_offset = 5;
+  if (buttons.pressed & Button::DPAD_UP)    y_offset = -5;
+
+  environment->transform *= Mat3::translation(Vec2(x_offset, y_offset));
 }

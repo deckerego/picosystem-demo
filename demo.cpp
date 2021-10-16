@@ -1,4 +1,4 @@
-#include "game.hpp"
+#include "demo.hpp"
 #include "assets.hpp"
 
 using namespace blit;

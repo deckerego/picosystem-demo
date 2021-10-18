@@ -20,6 +20,10 @@ void render(uint32_t time) { // millis elapsed since start
     screen.clear();
 
     environment->draw(&screen, Rect(0, 0, 240, 240), nullptr);
+    screen.sprite(Rect(0, 0, 2, 2), Point(8, 0));
+    screen.sprite(Rect(2, 0, 2, 2), Point(216, 0));
+    screen.sprite(Rect(4, 0, 2, 2), Point(216, 208));
+    screen.sprite(Rect(6, 0, 2, 2), Point(8, 208));
 }
 
 void update(uint32_t time) { // millis elapsed since start
@@ -30,6 +34,4 @@ void update(uint32_t time) { // millis elapsed since start
   if (buttons.pressed & Button::DPAD_RIGHT) x_offset = 5;
   if (buttons.pressed & Button::DPAD_DOWN)  y_offset = 5;
   if (buttons.pressed & Button::DPAD_UP)    y_offset = -5;
-
-  environment->transform *= Mat3::translation(Vec2(x_offset, y_offset));
 }

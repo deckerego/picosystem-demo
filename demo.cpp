@@ -1,15 +1,35 @@
+#include <cstdlib>
 #include "demo.hpp"
 #include "assets.hpp"
 
 using namespace blit;
 
 TileMap* environment;
+uint8_t field[14][14];
 
 void init() {
     set_screen_mode(ScreenMode::hires);
 
     screen.sprites = Surface::load(asset_platformer);
     environment = new TileMap((uint8_t*)asset_tilemap, nullptr, Size(32, 32), screen.sprites);
+    init_field();
+}
+
+void init_field() {
+  for(uint8_t x = 0; x < 14; ++x) {
+    for(uint8_t y = 0; y < 14; ++y) {
+      field[x][y] = rand() % 4;
+    }
+  }
+}
+
+void blit_field() {
+  for(uint8_t x = 0; x < 14; ++x) {
+    for(uint8_t y = 0; y < 14; ++y) {
+      uint8_t sprite_idx = field[x][y];
+      screen.sprite(Rect(sprite_idx << 1, 0, 2, 2), Point(8 + (x << 4), y << 4));
+    }
+  }
 }
 
 void render(uint32_t time) { // millis elapsed since start
@@ -20,10 +40,7 @@ void render(uint32_t time) { // millis elapsed since start
     screen.clear();
 
     environment->draw(&screen, Rect(0, 0, 240, 240), nullptr);
-    screen.sprite(Rect(0, 0, 2, 2), Point(8, 0));
-    screen.sprite(Rect(2, 0, 2, 2), Point(216, 0));
-    screen.sprite(Rect(4, 0, 2, 2), Point(216, 208));
-    screen.sprite(Rect(6, 0, 2, 2), Point(8, 208));
+    blit_field();
 }
 
 void update(uint32_t time) { // millis elapsed since start

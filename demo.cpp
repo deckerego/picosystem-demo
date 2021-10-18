@@ -9,7 +9,7 @@ void init() {
     set_screen_mode(ScreenMode::hires);
 
     screen.sprites = Surface::load(asset_platformer);
-    environment = new TileMap((uint8_t*)asset_tilemap, nullptr, Size(64, 64), screen.sprites);
+    environment = new TileMap((uint8_t*)asset_tilemap, nullptr, Size(32, 32), screen.sprites);
 }
 
 void render(uint32_t time) { // millis elapsed since start

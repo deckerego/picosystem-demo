@@ -5,7 +5,7 @@
 using namespace blit;
 
 TileMap* environment;
-uint8_t field[14][14];
+Sphere field[14][14];
 
 void init() {
     set_screen_mode(ScreenMode::hires);
@@ -18,7 +18,7 @@ void init() {
 void init_field() {
   for(uint8_t x = 0; x < 14; ++x) {
     for(uint8_t y = 0; y < 14; ++y) {
-      field[x][y] = rand() % 4;
+      field[x][y].position = Vec2(x, y);
     }
   }
 }
@@ -26,7 +26,8 @@ void init_field() {
 void blit_field() {
   for(uint8_t x = 0; x < 14; ++x) {
     for(uint8_t y = 0; y < 14; ++y) {
-      uint8_t sprite_idx = field[x][y];
+      Sphere sphere = field[x][y];
+      uint8_t sprite_idx = sphere.type;
       screen.sprite(Rect(sprite_idx << 1, 0, 2, 2), Point(8 + (x << 4), y << 4));
     }
   }

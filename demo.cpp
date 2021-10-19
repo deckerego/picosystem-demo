@@ -31,9 +31,7 @@ void swap(Point origin, Point dest) {
 void init_field() {
   for(uint8_t x = 0; x < FIELD_COLS; ++x) {
     for(uint8_t y = 0; y < FIELD_ROWS; ++y) {
-      Point position = Point(8 + (x << 4), y << 4);
-      uint8_t type = rand() % 4;
-      field[x][y] = new Sphere(position, type);
+      field[x][y] = new Sphere(Point(8 + (x << 4), y << 4), rand() % TYPES_MAX);
     }
   }
 }
@@ -75,9 +73,7 @@ void remove(uint8_t x, uint8_t y) {
   for(uint8_t rel_y = y; rel_y > 0; --rel_y) {
     field[x][rel_y] = field[x][rel_y - 1];
   }
-  Point position = Point(8 + (x << 4), 0);
-  uint8_t type = rand() % 4;
-  field[x][0] = new Sphere(position, type);
+  field[x][0] = new Sphere(Point(8 + (x << 4), 0), rand() % TYPES_MAX);
 }
 
 void clear_matches() {

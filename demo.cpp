@@ -6,6 +6,7 @@ using namespace blit;
 
 TileMap* environment;
 Sphere* field[FIELD_COLS][FIELD_ROWS];
+Cursor cursor = Cursor(Vec2(8, 0));
 
 template <typename T> int sgn(T v) {
     return (T(0) < v) - (v < T(0));
@@ -33,6 +34,10 @@ void render_field() {
       }
     }
   }
+}
+
+void render_cursor() {
+  screen.sprite(cursor.sprite, cursor.position);
 }
 
 void update_field() {
@@ -68,16 +73,14 @@ void render(uint32_t time) {
 
     environment->draw(&screen, Rect(0, 0, 240, 240), nullptr);
     render_field();
+    render_cursor();
 }
 
 void update(uint32_t time) {
-  int16_t x_offset = 0;
-  int16_t y_offset = 0;
-
-  if (buttons.pressed & Button::DPAD_LEFT)  x_offset = -5;
-  if (buttons.pressed & Button::DPAD_RIGHT) x_offset = 5;
-  if (buttons.pressed & Button::DPAD_DOWN)  y_offset = 5;
-  if (buttons.pressed & Button::DPAD_UP)    y_offset = -5;
+  if (buttons.pressed & Button::DPAD_LEFT)  cursor.position.x -= SPHERE_SIZE;
+  if (buttons.pressed & Button::DPAD_RIGHT) cursor.position.x += SPHERE_SIZE;
+  if (buttons.pressed & Button::DPAD_DOWN)  cursor.position.y += SPHERE_SIZE;
+  if (buttons.pressed & Button::DPAD_UP)    cursor.position.y -= SPHERE_SIZE;
 
   update_field();
 }

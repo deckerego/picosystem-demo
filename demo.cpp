@@ -7,11 +7,8 @@ using namespace blit;
 TileMap* environment;
 Sphere* field[14][14];
 
-void init() {
-    set_screen_mode(ScreenMode::hires);
-    screen.sprites = Surface::load(asset_platformer);
-    environment = new TileMap((uint8_t*)asset_tilemap, nullptr, Size(32, 32), screen.sprites);
-    init_field();
+template <typename T> int sgn(T v) {
+    return (T(0) < v) - (v < T(0));
 }
 
 void init_field() {
@@ -24,6 +21,7 @@ void render_field() {
   for(uint8_t x = 0; x < 14; ++x) {
     for(uint8_t y = 0; y < 14; ++y) {
       Sphere* sphere = field[x][y];
+
       if(sphere != nullptr) {
         uint8_t sprite_idx = sphere->type;
         screen.sprite(Rect(sprite_idx << 1, 0, 2, 2), sphere->position);
@@ -36,17 +34,28 @@ void update_field() {
   for(uint8_t x = 0; x < 14; ++x) {
     for(uint8_t y = 0; y < 14; ++y) {
       Sphere* sphere = field[x][y];
+
       if(sphere != nullptr) {
         uint8_t expected_x = 8 + (x << 4);
+        uint8_t direction_x = sgn(expected_x - sphere->position.x);
+        sphere->position.x += 2 * direction_x;
+
         uint8_t expected_y = y << 4;
-        if(sphere->position.y < expected_y) sphere->position.y += 2;
+        uint8_t direction_y = sgn(expected_y - sphere->position.y);
+        sphere->position.y += 2 * direction_y;
       }
     }
   }
 }
 
-void render(uint32_t time) { // millis elapsed since start
-    // reset everything to defaults
+void init() {
+    set_screen_mode(ScreenMode::hires);
+    screen.sprites = Surface::load(asset_platformer);
+    environment = new TileMap((uint8_t*)asset_tilemap, nullptr, Size(32, 32), screen.sprites);
+    init_field();
+}
+
+void render(uint32_t time) {
     screen.alpha = 255;
     screen.mask = nullptr;
     screen.pen = Pen(0, 0, 0);
@@ -56,7 +65,7 @@ void render(uint32_t time) { // millis elapsed since start
     render_field();
 }
 
-void update(uint32_t time) { // millis elapsed since start
+void update(uint32_t time) {
   int16_t x_offset = 0;
   int16_t y_offset = 0;
 

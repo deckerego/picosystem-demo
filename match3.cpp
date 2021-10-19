@@ -14,8 +14,8 @@ template <typename T> int sgn(T v) {
 }
 
 void swap(Point origin, Point dest) {
-  if(dest.x < SCREEN_MIN || dest.x > SCREEN_MAX) return;
-  if(dest.y < SCREEN_MIN || dest.y > SCREEN_MAX) return;
+  if(dest.x < 0 || dest.x >= 224) return;
+  if(dest.y < 0 || dest.y >= 224) return;
 
   uint8_t origin_x = (origin.x - 8) >> 4;
   uint8_t origin_y = origin.y >> 4;
@@ -126,10 +126,10 @@ void render(uint32_t time) {
 }
 
 void update(uint32_t time) {
-  if (buttons.pressed & Button::DPAD_LEFT)  cursor.position.x -= cursor.position.x >= SCREEN_MIN ? SPHERE_SIZE : 0;
-  if (buttons.pressed & Button::DPAD_RIGHT) cursor.position.x += cursor.position.x <= SCREEN_MAX ? SPHERE_SIZE : 0;
-  if (buttons.pressed & Button::DPAD_DOWN)  cursor.position.y += cursor.position.y <= SCREEN_MAX ? SPHERE_SIZE : 0;
-  if (buttons.pressed & Button::DPAD_UP)    cursor.position.y -= cursor.position.y >= SCREEN_MIN ? SPHERE_SIZE : 0;
+  if (buttons.pressed & Button::DPAD_LEFT)  cursor.position.x -= cursor.position.x > 8 ? SPHERE_SIZE : 0;
+  if (buttons.pressed & Button::DPAD_RIGHT) cursor.position.x += cursor.position.x < 216 ? SPHERE_SIZE : 0;
+  if (buttons.pressed & Button::DPAD_DOWN)  cursor.position.y += cursor.position.y < 208 ? SPHERE_SIZE : 0;
+  if (buttons.pressed & Button::DPAD_UP)    cursor.position.y -= cursor.position.y > 0 ? SPHERE_SIZE : 0;
 
   if (buttons.pressed & Button::Y) swap(cursor.position, Point(cursor.position.x - SPHERE_SIZE, cursor.position.y));
   if (buttons.pressed & Button::A) swap(cursor.position, Point(cursor.position.x + SPHERE_SIZE, cursor.position.y));

@@ -6,6 +6,8 @@
 const uint8_t FIELD_ROWS = 14;
 const uint8_t FIELD_COLS = 14;
 const uint8_t SPHERE_SIZE = 16;
+const uint8_t SCREEN_MIN = SPHERE_SIZE;
+const uint8_t SCREEN_MAX = 240 - SPHERE_SIZE;
 
 struct Sphere {
     blit::Point position;

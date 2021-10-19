@@ -13,7 +13,9 @@ template <typename T> int sgn(T v) {
 
 void init_field() {
   for(uint8_t x = 0; x < 14; ++x) {
-    field[x][13] = new Sphere(Vec2(8 + (x << 4), -16), rand() % 4);
+    for(uint8_t y = 0; y < 14; ++y) {
+      field[x][y] = new Sphere(Vec2(8 + (x << 4), ((y - 14) << 4)), rand() % 4);
+    }
   }
 }
 
@@ -37,11 +39,11 @@ void update_field() {
 
       if(sphere != nullptr) {
         uint8_t expected_x = 8 + (x << 4);
-        uint8_t direction_x = sgn(expected_x - sphere->position.x);
+        int8_t direction_x = sgn(expected_x - sphere->position.x);
         sphere->position.x += 2 * direction_x;
 
         uint8_t expected_y = y << 4;
-        uint8_t direction_y = sgn(expected_y - sphere->position.y);
+        int8_t direction_y = sgn(expected_y - sphere->position.y);
         sphere->position.y += 2 * direction_y;
       }
     }

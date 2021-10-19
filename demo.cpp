@@ -9,7 +9,6 @@ Sphere field[14][14];
 
 void init() {
     set_screen_mode(ScreenMode::hires);
-
     screen.sprites = Surface::load(asset_platformer);
     environment = new TileMap((uint8_t*)asset_tilemap, nullptr, Size(32, 32), screen.sprites);
     init_field();
@@ -18,7 +17,7 @@ void init() {
 void init_field() {
   for(uint8_t x = 0; x < 14; ++x) {
     for(uint8_t y = 0; y < 14; ++y) {
-      field[x][y].position = Vec2(x, y);
+      field[x][y].position = Vec2(8 + (x << 4), y << 4);
     }
   }
 }
@@ -28,7 +27,7 @@ void blit_field() {
     for(uint8_t y = 0; y < 14; ++y) {
       Sphere sphere = field[x][y];
       uint8_t sprite_idx = sphere.type;
-      screen.sprite(Rect(sprite_idx << 1, 0, 2, 2), Point(8 + (x << 4), y << 4));
+      screen.sprite(Rect(sprite_idx << 1, 0, 2, 2), sphere.position);
     }
   }
 }

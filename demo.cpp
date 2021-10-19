@@ -6,16 +6,28 @@ using namespace blit;
 
 TileMap* environment;
 Sphere* field[FIELD_COLS][FIELD_ROWS];
-Cursor cursor = Cursor(Vec2(8, 0));
+Cursor cursor = Cursor(Point(8, 0));
 
 template <typename T> int sgn(T v) {
     return (T(0) < v) - (v < T(0));
 }
 
+void swap(Point origin, Point dest) {
+  uint8_t origin_x = (origin.x - 8) >> 4;
+  uint8_t origin_y = origin.y >> 4;
+
+  uint8_t dest_x = (dest.x - 8) >> 4;
+  uint8_t dest_y = dest.y >> 4;
+
+  Sphere* swap = field[dest_x][dest_y];
+  field[dest_x][dest_y] = field[origin_x][origin_y];
+  field[origin_x][origin_y] = swap;
+}
+
 void init_field() {
   for(uint8_t x = 0; x < FIELD_COLS; ++x) {
     for(uint8_t y = 0; y < FIELD_ROWS; ++y) {
-      Vec2 position = Vec2(8 + (x << 4), ((y - FIELD_ROWS) << 4));
+      Point position = Point(8 + (x << 4), ((y - FIELD_ROWS) << 4));
       uint8_t type = rand() % 4;
       field[x][y] = new Sphere(position, type);
     }
@@ -81,6 +93,11 @@ void update(uint32_t time) {
   if (buttons.pressed & Button::DPAD_RIGHT) cursor.position.x += SPHERE_SIZE;
   if (buttons.pressed & Button::DPAD_DOWN)  cursor.position.y += SPHERE_SIZE;
   if (buttons.pressed & Button::DPAD_UP)    cursor.position.y -= SPHERE_SIZE;
+
+  if (buttons.pressed & Button::Y) swap(cursor.position, Point(cursor.position.x - SPHERE_SIZE, cursor.position.y));
+  if (buttons.pressed & Button::A) swap(cursor.position, Point(cursor.position.x + SPHERE_SIZE, cursor.position.y));
+  if (buttons.pressed & Button::B) swap(cursor.position, Point(cursor.position.x, cursor.position.y + SPHERE_SIZE));
+  if (buttons.pressed & Button::X) swap(cursor.position, Point(cursor.position.x, cursor.position.y - SPHERE_SIZE));
 
   update_field();
 }

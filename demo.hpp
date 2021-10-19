@@ -3,6 +3,9 @@
 #include <cstdint>
 #include <cstdlib>
 
+const uint8_t FIELD_ROWS = 14;
+const uint8_t FIELD_COLS = 14;
+
 struct Sphere {
     blit::Vec2 position;
     uint8_t type = 0;

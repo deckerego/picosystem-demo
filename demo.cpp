@@ -5,23 +5,23 @@
 using namespace blit;
 
 TileMap* environment;
-Sphere* field[14][14];
+Sphere* field[FIELD_COLS][FIELD_ROWS];
 
 template <typename T> int sgn(T v) {
     return (T(0) < v) - (v < T(0));
 }
 
 void init_field() {
-  for(uint8_t x = 0; x < 14; ++x) {
-    for(uint8_t y = 0; y < 14; ++y) {
-      field[x][y] = new Sphere(Vec2(8 + (x << 4), ((y - 14) << 4)), rand() % 4);
+  for(uint8_t x = 0; x < FIELD_COLS; ++x) {
+    for(uint8_t y = 0; y < FIELD_ROWS; ++y) {
+      field[x][y] = new Sphere(Vec2(8 + (x << 4), ((y - FIELD_ROWS) << 4)), rand() % 4);
     }
   }
 }
 
 void render_field() {
-  for(uint8_t x = 0; x < 14; ++x) {
-    for(uint8_t y = 0; y < 14; ++y) {
+  for(uint8_t x = 0; x < FIELD_COLS; ++x) {
+    for(uint8_t y = 0; y < FIELD_ROWS; ++y) {
       Sphere* sphere = field[x][y];
 
       if(sphere != nullptr) {
@@ -33,8 +33,8 @@ void render_field() {
 }
 
 void update_field() {
-  for(uint8_t x = 0; x < 14; ++x) {
-    for(uint8_t y = 0; y < 14; ++y) {
+  for(uint8_t x = 0; x < FIELD_COLS; ++x) {
+    for(uint8_t y = 0; y < FIELD_ROWS; ++y) {
       Sphere* sphere = field[x][y];
 
       if(sphere != nullptr) {

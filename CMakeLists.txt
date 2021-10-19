@@ -2,10 +2,10 @@
 cmake_minimum_required(VERSION 3.9)
 
 # Replace "game" with a name for your project (this is used the name of the output)
-project(demo)
+project(match3)
 
 # Add your sources here (adding headers is optional, but helps some CMake generators)
-set(PROJECT_SOURCE demo.cpp demo.hpp)
+set(PROJECT_SOURCE match3.cpp match3.hpp)
 
 # ... and any other files you want in the release here
 set(PROJECT_DISTRIBS LICENSE README.md)

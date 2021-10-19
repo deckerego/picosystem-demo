@@ -1,10 +1,10 @@
-title: PicoSystem Demo
-description: A demo project to demo how to build games for the Pimoroni PicoSystem
+title: PicoSystem Match 3
+description: A demo match 3 game for the Pimoroni PicoSystem
 author: DeckerEgo <john@deckerego.net>
 splash:
-  file: assets/no-image.png
+  file: assets/image.png
 icon:
-  file: assets/no-icon.png
-version: v0.0.1
-category: demo
+  file: assets/icon.png
+version: v0.1.0
+category: game
 url: https://github.com/deckerego/picosystem-demo

@@ -1,6 +1,6 @@
 #include <cstdlib>
 #include <vector>
-#include "demo.hpp"
+#include "match3.hpp"
 #include "assets.hpp"
 
 using namespace blit;
@@ -108,7 +108,7 @@ void clear_matches() {
 
 void init() {
     set_screen_mode(ScreenMode::hires);
-    screen.sprites = Surface::load(asset_platformer);
+    screen.sprites = Surface::load(asset_sprites);
     environment = new TileMap((uint8_t*)asset_tilemap, nullptr, Size(32, 32), screen.sprites);
     init_field();
 }

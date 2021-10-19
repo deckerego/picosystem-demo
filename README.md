@@ -1,6 +1,6 @@
-# PicoSystem 32blit Demo
+# PicoSystem 32blit Match 3 Demo
 
-A demo project to demo how to build games for the Pimoroni PicoSystem.
+A Match 3 game to demo how to build games for the Pimoroni PicoSystem.
 
 ## Tools Used
 

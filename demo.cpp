@@ -1,4 +1,5 @@
 #include <cstdlib>
+#include <vector>
 #include "demo.hpp"
 #include "assets.hpp"
 
@@ -27,7 +28,7 @@ void swap(Point origin, Point dest) {
 void init_field() {
   for(uint8_t x = 0; x < FIELD_COLS; ++x) {
     for(uint8_t y = 0; y < FIELD_ROWS; ++y) {
-      Point position = Point(8 + (x << 4), ((y - FIELD_ROWS) << 4));
+      Point position = Point(8 + (x << 4), y << 4);
       uint8_t type = rand() % 4;
       field[x][y] = new Sphere(position, type);
     }
@@ -48,10 +49,6 @@ void render_field() {
   }
 }
 
-void render_cursor() {
-  screen.sprite(cursor.sprite, cursor.position);
-}
-
 void update_field() {
   for(uint8_t x = 0; x < FIELD_COLS; ++x) {
     for(uint8_t y = 0; y < FIELD_ROWS; ++y) {
@@ -65,6 +62,46 @@ void update_field() {
         uint8_t expected_y = y << 4;
         int8_t direction_y = sgn(expected_y - sphere->position.y);
         sphere->position.y += 2 * direction_y;
+      }
+    }
+  }
+}
+
+void remove(uint8_t x, uint8_t y) {
+  delete field[x][y];
+  for(uint8_t rel_y = y; rel_y > 0; --rel_y) {
+    field[x][rel_y] = field[x][rel_y - 1];
+  }
+  Point position = Point(8 + (x << 4), 0);
+  uint8_t type = rand() % 4;
+  field[x][0] = new Sphere(position, type);
+}
+
+void clear_matches() {
+  for(uint8_t y = 0; y < FIELD_ROWS; ++y) {
+    for(uint8_t x = 0; x < FIELD_COLS; ++x) {
+      Sphere* i = field[x][y];
+
+      std::vector<uint8_t> match_horiz = {x};
+      for(uint8_t h = x + 1; h < FIELD_COLS; ++h) {
+        if(i->type == field[h][y]->type) match_horiz.push_back(h);
+        else break;
+      }
+      if(match_horiz.size() > 2) {
+        for(uint8_t h : match_horiz) {
+          remove(h, y);
+        }
+      }
+
+      std::vector<uint8_t> match_vert = {y};
+      for(uint8_t v = y + 1; v < FIELD_ROWS; ++v) {
+        if(i->type == field[x][v]->type) match_vert.push_back(v);
+        else break;
+      }
+      if(match_vert.size() > 2) {
+        for(std::vector<uint8_t>::reverse_iterator v = match_vert.rbegin(); v != match_vert.rend(); ++v) {
+          remove(x, *v);
+        }
       }
     }
   }
@@ -85,7 +122,8 @@ void render(uint32_t time) {
 
     environment->draw(&screen, Rect(0, 0, 240, 240), nullptr);
     render_field();
-    render_cursor();
+
+    screen.sprite(cursor.sprite, cursor.position);
 }
 
 void update(uint32_t time) {
@@ -99,5 +137,6 @@ void update(uint32_t time) {
   if (buttons.pressed & Button::B) swap(cursor.position, Point(cursor.position.x, cursor.position.y + SPHERE_SIZE));
   if (buttons.pressed & Button::X) swap(cursor.position, Point(cursor.position.x, cursor.position.y - SPHERE_SIZE));
 
+  clear_matches();
   update_field();
 }

@@ -26,9 +26,11 @@ void init_field();
 
 void render(uint32_t time);
 void render_field();
-void render_cursor();
 
 void update(uint32_t time);
 void update_field();
+
+void remove(uint8_t x, uint8_t y);
+void clear_matches();
 
 void swap(blit::Point origin, blit::Point dest);

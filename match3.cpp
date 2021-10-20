@@ -40,12 +40,11 @@ void render_field() {
   for(uint8_t x = 0; x < FIELD_COLS; ++x) {
     for(uint8_t y = 0; y < FIELD_ROWS; ++y) {
       Sphere* sphere = field[x][y];
+      if(sphere == nullptr) break;
 
-      if(sphere != nullptr) {
-        uint8_t sprite_idx = sphere->type;
-        Rect sprite = Rect(sprite_idx << 1, 0, 2, 2);
-        screen.sprite(sprite, sphere->position);
-      }
+      uint8_t sprite_idx = sphere->type;
+      Rect sprite = Rect(sprite_idx << 1, 0, 2, 2);
+      screen.sprite(sprite, sphere->position);
     }
   }
 }
@@ -54,16 +53,15 @@ void update_field() {
   for(uint8_t x = 0; x < FIELD_COLS; ++x) {
     for(uint8_t y = 0; y < FIELD_ROWS; ++y) {
       Sphere* sphere = field[x][y];
+      if(sphere == nullptr) break; //TODO Animation flag?
 
-      if(sphere != nullptr) { //TODO Animation flag?
-        uint8_t expected_x = 8 + (x << 4);
-        int8_t direction_x = sgn(expected_x - sphere->position.x);
-        sphere->position.x += 2 * direction_x;
+      uint8_t expected_x = 8 + (x << 4);
+      int8_t direction_x = sgn(expected_x - sphere->position.x);
+      sphere->position.x += 2 * direction_x;
 
-        uint8_t expected_y = y << 4;
-        int8_t direction_y = sgn(expected_y - sphere->position.y);
-        sphere->position.y += 2 * direction_y;
-      }
+      uint8_t expected_y = y << 4;
+      int8_t direction_y = sgn(expected_y - sphere->position.y);
+      sphere->position.y += 2 * direction_y;
     }
   }
 }
@@ -80,6 +78,7 @@ void clear_matches() {
   for(uint8_t y = 0; y < FIELD_ROWS; ++y) {
     for(uint8_t x = 0; x < FIELD_COLS; ++x) {
       Sphere* i = field[x][y];
+      if(i == nullptr) break;
 
       std::vector<uint8_t> match_horiz = {x};
       for(uint8_t h = x + 1; h < FIELD_COLS; ++h) {

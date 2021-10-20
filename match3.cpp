@@ -57,11 +57,11 @@ void update_field() {
 
       uint8_t expected_x = 8 + (x << 4);
       int8_t direction_x = sgn(expected_x - sphere->position.x);
-      sphere->position.x += 2 * direction_x;
+      sphere->position.x += direction_x;
 
       uint8_t expected_y = y << 4;
       int8_t direction_y = sgn(expected_y - sphere->position.y);
-      sphere->position.y += 2 * direction_y;
+      sphere->position.y += direction_y;
     }
   }
 }

@@ -114,7 +114,7 @@ void update_field() {
         sphere->frame -= 1;
       } else if(sphere->state == Sphere::DELETE) { //Remove the sphere
         remove(x, y);
-      } else if((sphere->state == Sphere::MATCH) && aligned(sphere)) { //Begin delete animation
+      } else if(sphere->state == Sphere::MATCH && aligned(sphere)) { //Begin delete animation
         animate_delete(x, y);
       } else { //Animate spheres moving
         uint8_t expected_x = 8 + (x << 4);
@@ -198,7 +198,7 @@ void render(uint32_t time) {
 }
 
 void update(uint32_t time) {
-  if(debounce_start < time) {
+  if(debounce_start < time && buttons.state) {
     debounce_start = time + DEBOUNCE_INTERVAL;
     if(buttons.state & Button::DPAD_LEFT) cursor.location.first -= cursor.location.first > 0 ? 1 : 0;
     if(buttons.state & Button::DPAD_RIGHT) cursor.location.first += cursor.location.first < FIELD_COLS ? 1 : 0;

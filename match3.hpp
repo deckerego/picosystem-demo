@@ -7,7 +7,7 @@ const uint8_t FIELD_ROWS = 14;
 const uint8_t FIELD_COLS = 14;
 const uint8_t SPHERE_SIZE = 16;
 const uint8_t TYPES_MAX = 7;
-const uint32_t DEBOUNCE_INTERVAL = 120;
+const uint32_t DEBOUNCE_INTERVAL = 200;
 
 struct Sphere {
     static const uint8_t NONE = 0;

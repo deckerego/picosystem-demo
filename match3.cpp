@@ -21,9 +21,6 @@ void swap(std::pair<uint8_t, uint8_t> origin, std::pair<uint8_t, uint8_t> dest) 
   Sphere* swap = field[dest.first][dest.second];
   field[dest.first][dest.second] = field[origin.first][origin.second];
   field[origin.first][origin.second] = swap;
-  while(clear_matches()) {
-    update_field();
-  }
 }
 
 void remove(uint8_t x, uint8_t y, uint8_t depth=1) {
@@ -39,7 +36,7 @@ void remove(uint8_t x, uint8_t y, uint8_t depth=1) {
 bool aligned_horiz(Sphere* sphere) {
   if(! sphere->parent) return true;
   Sphere* child = field[sphere->child.first][sphere->child.second];
-  if(sphere->position.x == child->position.x) {
+  if(sphere->position.x == child->position.x && abs(sphere->position.y - child->position.y) == 16) {
     return aligned_horiz(child);
   } else {
     return false;
@@ -49,7 +46,7 @@ bool aligned_horiz(Sphere* sphere) {
 bool aligned_vert(Sphere* sphere) {
   if(! sphere->parent) return true;
   Sphere* child = field[sphere->child.first][sphere->child.second];
-  if(sphere->position.y == child->position.y) {
+  if(sphere->position.y == child->position.y && abs(sphere->position.x - child->position.x) == 16) {
     return aligned_vert(child);
   } else {
     return false;
@@ -167,10 +164,6 @@ void init() {
     screen.sprites = Surface::load(asset_sprites);
     environment = new TileMap((uint8_t*)asset_tilemap, nullptr, Size(32, 32), screen.sprites);
     init_field();
-
-    while(clear_matches()) {
-      update_field();
-    }
 }
 
 void render(uint32_t time) {
@@ -198,5 +191,6 @@ void update(uint32_t time) {
   if(buttons.pressed & Button::B) swap(cursor.location, {cursor.location.first, cursor.location.second + 1});
   if(buttons.pressed & Button::X) swap(cursor.location, {cursor.location.first, cursor.location.second - 1});
 
+  clear_matches();
   update_field();
 }

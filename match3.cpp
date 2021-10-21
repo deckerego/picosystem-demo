@@ -16,8 +16,7 @@ template <typename T> int sgn(T v) {
 }
 
 void swap(std::pair<uint8_t, uint8_t> origin, std::pair<uint8_t, uint8_t> dest) {
-  if(dest.first < 0 || dest.first >= FIELD_COLS) return;
-  if(dest.second < 0 || dest.second >= FIELD_ROWS) return;
+  if(dest.first >= FIELD_COLS || dest.second >= FIELD_ROWS) return;
   Sphere* swap = field[dest.first][dest.second];
   field[dest.first][dest.second] = field[origin.first][origin.second];
   field[origin.first][origin.second] = swap;

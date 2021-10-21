@@ -9,6 +9,11 @@ const uint8_t SPHERE_SIZE = 16;
 const uint8_t TYPES_MAX = 7;
 const uint32_t DEBOUNCE_INTERVAL = 200;
 
+struct SaveData {
+  std::pair<blit::Point, uint8_t> field[FIELD_COLS][FIELD_ROWS];
+  int32_t score;
+};
+
 struct Sphere {
     static const uint8_t NONE = 0;
     static const uint8_t MATCH = 1;
@@ -52,3 +57,6 @@ void animate_delete(uint8_t x, uint8_t y);
 uint8_t mark_matches();
 uint8_t mark_matches_horiz();
 uint8_t mark_matches_vert();
+
+void save_game();
+void restore_game();

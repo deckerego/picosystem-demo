@@ -18,6 +18,7 @@ template <typename T> int sgn(T v) {
 
 // Swap two spheres with each other
 void swap(std::pair<uint8_t, uint8_t> origin, std::pair<uint8_t, uint8_t> dest) {
+  save_game();
   if(dest.first >= FIELD_COLS || dest.second >= FIELD_ROWS) return;
   Sphere* swap = field[dest.first][dest.second];
   field[dest.first][dest.second] = field[origin.first][origin.second];
@@ -75,15 +76,6 @@ bool aligned(Sphere* sphere) {
     return aligned_vert(child);
   } else {
     return false;
-  }
-}
-
-// Build our initial field
-void init_field() {
-  for(uint8_t x = 0; x < FIELD_COLS; ++x) {
-    for(uint8_t y = 0; y < FIELD_ROWS; ++y) {
-      field[x][y] = new Sphere(Point(8 + (x << 4), y << 4), rand() % TYPES_MAX);
-    }
   }
 }
 
@@ -215,7 +207,7 @@ void init() {
     set_screen_mode(ScreenMode::hires);
     screen.sprites = Surface::load(asset_sprites);
     environment = new TileMap((uint8_t*)asset_tilemap, nullptr, Size(32, 32), screen.sprites);
-    init_field();
+    restore_game();
 }
 
 // Render the screen
@@ -250,4 +242,35 @@ void update(uint32_t time) {
 
   score += mark_matches();
   update_field();
+}
+
+// Write game state to disk
+void save_game() {
+  SaveData data = SaveData();
+  data.score = score;
+  for(uint8_t y = 0; y < FIELD_ROWS; ++y) {
+    for(uint8_t x = 0; x < FIELD_COLS; ++x) {
+      data.field[x][y] = { field[x][y]->position, field[x][y]->type };
+    }
+  }
+  write_save(data);
+}
+
+// Read game state from disk
+void restore_game() {
+  SaveData data;
+  if(read_save(data)) { // We have a save file
+    score = data.score;
+    for(uint8_t y = 0; y < FIELD_ROWS; ++y) {
+      for(uint8_t x = 0; x < FIELD_COLS; ++x) {
+        field[x][y] = new Sphere(data.field[x][y].first, data.field[x][y].second);
+      }
+    }
+  } else { // No save file, start from scratch
+    for(uint8_t x = 0; x < FIELD_COLS; ++x) {
+      for(uint8_t y = 0; y < FIELD_ROWS; ++y) {
+        field[x][y] = new Sphere(Point(8 + (x << 4), y << 4), rand() % TYPES_MAX);
+      }
+    }
+  }
 }

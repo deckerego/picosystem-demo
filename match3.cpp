@@ -33,6 +33,13 @@ void remove(uint8_t x, uint8_t y, uint8_t depth=1) {
   delete sphere;
 }
 
+void animate_delete(uint8_t x, uint8_t y) {
+  Sphere* sphere = field[x][y];
+  sphere->state = Sphere::DELETE;
+  sphere->frame = 6;
+  if(sphere->parent) animate_delete(sphere->child.first, sphere->child.second);
+}
+
 bool aligned_horiz(Sphere* sphere) {
   if(! sphere->parent) return true;
   Sphere* child = field[sphere->child.first][sphere->child.second];
@@ -79,8 +86,15 @@ void render_field() {
       Sphere* sphere = field[x][y];
       if(sphere == nullptr) break;
 
-      uint8_t sprite_idx = sphere->type;
-      Rect sprite = Rect(sprite_idx << 1, 0, 2, 2);
+      Rect sprite;
+      if(sphere->state == Sphere::DELETE) {
+        uint8_t sprite_idx = sphere->frame;
+        sprite = Rect((sprite_idx + 2) << 1, 2, 2, 2);
+      } else {
+        uint8_t sprite_idx = sphere->type;
+        sprite = Rect(sprite_idx << 1, 0, 2, 2);
+      }
+
       screen.sprite(sprite, sphere->position);
     }
   }
@@ -97,9 +111,13 @@ void update_field() {
       Sphere* sphere = field[x][y];
       if(sphere == nullptr) break;
 
-      if(sphere->matched && aligned(sphere)) {
+      if(sphere->frame > 0) { //Still animation
+        sphere->frame -= 1;
+      } else if(sphere->state == Sphere::DELETE) { //Remove the sphere
         remove(x, y);
-      } else {
+      } else if((sphere->state == Sphere::MATCH) && aligned(sphere)) { //Begin delete animation
+        animate_delete(x, y);
+      } else { //Animate spheres moving
         uint8_t expected_x = 8 + (x << 4);
         int8_t direction_x = sgn(expected_x - sphere->position.x);
         sphere->position.x += direction_x;
@@ -119,7 +137,9 @@ uint8_t clear_matches() {
     for(uint8_t x = 0; x < FIELD_COLS; ++x) {
       Sphere* i = field[x][y];
       if(i == nullptr) break;
+      if(i->state != Sphere::NONE) break;
 
+      //Mark all horizontal matches
       std::vector<uint8_t> match_horiz = {x};
       for(uint8_t h = x + 1; h < FIELD_COLS; ++h) {
         if(i->type == field[h][y]->type) match_horiz.push_back(h);
@@ -127,7 +147,7 @@ uint8_t clear_matches() {
       }
       if(match_horiz.size() > 2) {
         matched += match_horiz.size();
-        i->matched = true;
+        i->state = Sphere::MATCH;
         Sphere* parent = i;
         for(uint8_t h : match_horiz) {
           Sphere* child = field[h][y];
@@ -137,6 +157,7 @@ uint8_t clear_matches() {
         }
       }
 
+      //Mark all vertical matches
       std::vector<uint8_t> match_vert = {y};
       for(uint8_t v = y + 1; v < FIELD_ROWS; ++v) {
         if(i->type == field[x][v]->type) match_vert.push_back(v);
@@ -144,7 +165,7 @@ uint8_t clear_matches() {
       }
       if(match_vert.size() > 2) {
         matched += match_horiz.size();
-        i->matched = true;
+        i->state = Sphere::MATCH;
         Sphere* parent = i;
         for(uint8_t v : match_vert) {
           Sphere* child = field[x][v];

@@ -62,7 +62,7 @@ then you can configure and build your .uf2 like so:
 ```
 mkdir build.pico
 cd build.pico
-cmake .. -D32BLIT_DIR=/opt/32blit-sdk -DPICO_SDK_PATH=/opt/pico-sdk -DPICO_BOARD=pimoroni_picosystem
+cmake .. -D32BLIT_DIR=/opt/32blit-sdk -DPICO_SDK_PATH=/opt/pico-sdk -DCMAKE_TOOLCHAIN_FILE=/opt/32blit-sdk/pico.toolchain -DPICO_BOARD=pimoroni_picosystem
 make
 ```
 

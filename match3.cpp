@@ -10,6 +10,7 @@ TileMap* environment;
 Sphere* field[FIELD_COLS][FIELD_ROWS];
 Cursor cursor = Cursor({0, 0});
 uint32_t debounce_start = 0;
+uint32_t score = 0;
 
 template <typename T> int sgn(T v) {
     return (T(0) < v) - (v < T(0));
@@ -195,6 +196,9 @@ void render(uint32_t time) {
     environment->draw(&screen, Rect(0, 0, 240, 240), nullptr);
     render_field();
     render_cursor();
+
+    screen.pen = Pen(0xFF, 0xFF, 0xFF);
+    screen.text("Score: " + std::to_string(score), minimal_font, Point(9, 224));
 }
 
 void update(uint32_t time) {
@@ -211,6 +215,6 @@ void update(uint32_t time) {
   if(buttons.pressed & Button::B) swap(cursor.location, {cursor.location.first, cursor.location.second + 1});
   if(buttons.pressed & Button::X) swap(cursor.location, {cursor.location.first, cursor.location.second - 1});
 
-  clear_matches();
+  score += clear_matches();
   update_field();
 }

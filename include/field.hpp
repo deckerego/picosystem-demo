@@ -20,17 +20,20 @@ struct Field {
   void remove_all(uint8_t x, uint8_t y, uint8_t depth);
   void disappear_all(uint8_t x, uint8_t y);
 
-  bool aligned_horiz(Sphere* sphere);
-  bool aligned_vert(Sphere* sphere);
   bool aligned(Sphere* sphere);
 
   uint8_t mark_matches();
-  uint8_t mark_matches_horiz(uint8_t x, uint8_t y);
-  uint8_t mark_matches_vert(uint8_t x, uint8_t y);
 
   void update_field();
 
   void create();
   void serialize(std::pair<blit::Point, uint8_t> data[FIELD_COLS][FIELD_ROWS]);
   void deserialize(std::pair<blit::Point, uint8_t> data[FIELD_COLS][FIELD_ROWS]);
+
+private:
+  bool aligned_horiz(Sphere* sphere);
+  bool aligned_vert(Sphere* sphere);
+
+  uint8_t mark_matches_horiz(uint8_t x, uint8_t y);
+  uint8_t mark_matches_vert(uint8_t x, uint8_t y);
 };

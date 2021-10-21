@@ -45,8 +45,10 @@ bool aligned_horiz(Sphere* sphere);
 bool aligned_vert(Sphere* sphere);
 bool aligned(Sphere* sphere);
 
+void swap(blit::Point origin, blit::Point dest);
 void remove(uint8_t x, uint8_t y, uint8_t depth);
 void animate_delete(uint8_t x, uint8_t y);
-uint8_t clear_matches();
 
-void swap(blit::Point origin, blit::Point dest);
+uint8_t mark_matches();
+uint8_t mark_matches_horiz();
+uint8_t mark_matches_vert();

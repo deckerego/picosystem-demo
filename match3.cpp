@@ -16,6 +16,7 @@ template <typename T> int sgn(T v) {
     return (T(0) < v) - (v < T(0));
 }
 
+// Swap two spheres with each other
 void swap(std::pair<uint8_t, uint8_t> origin, std::pair<uint8_t, uint8_t> dest) {
   if(dest.first >= FIELD_COLS || dest.second >= FIELD_ROWS) return;
   Sphere* swap = field[dest.first][dest.second];
@@ -23,6 +24,7 @@ void swap(std::pair<uint8_t, uint8_t> origin, std::pair<uint8_t, uint8_t> dest) 
   field[origin.first][origin.second] = swap;
 }
 
+// Remove a sphere and replace it with the one above it
 void remove(uint8_t x, uint8_t y, uint8_t depth=1) {
   Sphere* sphere = field[x][y];
   for(uint8_t rel_y = y; rel_y > 0; --rel_y) {
@@ -33,6 +35,7 @@ void remove(uint8_t x, uint8_t y, uint8_t depth=1) {
   delete sphere;
 }
 
+// Begin the delete animation for a single sphere
 void animate_delete(uint8_t x, uint8_t y) {
   Sphere* sphere = field[x][y];
   sphere->state = Sphere::DELETE;
@@ -40,6 +43,7 @@ void animate_delete(uint8_t x, uint8_t y) {
   if(sphere->parent) animate_delete(sphere->child.first, sphere->child.second);
 }
 
+// Are all the horizontally matched spheres settled in a row?
 bool aligned_horiz(Sphere* sphere) {
   if(! sphere->parent) return true;
   Sphere* child = field[sphere->child.first][sphere->child.second];
@@ -50,6 +54,7 @@ bool aligned_horiz(Sphere* sphere) {
   }
 }
 
+// Are all the vertically matched spheres settled in a row?
 bool aligned_vert(Sphere* sphere) {
   if(! sphere->parent) return true;
   Sphere* child = field[sphere->child.first][sphere->child.second];
@@ -60,6 +65,7 @@ bool aligned_vert(Sphere* sphere) {
   }
 }
 
+// Are all the matched spheres settled in a row?
 bool aligned(Sphere* sphere) {
   if(! sphere->parent) return false;
   Sphere* child = field[sphere->child.first][sphere->child.second];
@@ -72,6 +78,7 @@ bool aligned(Sphere* sphere) {
   }
 }
 
+// Build our initial field
 void init_field() {
   for(uint8_t x = 0; x < FIELD_COLS; ++x) {
     for(uint8_t y = 0; y < FIELD_ROWS; ++y) {
@@ -80,6 +87,7 @@ void init_field() {
   }
 }
 
+// Blit sprites
 void render_field() {
   for(uint8_t x = 0; x < FIELD_COLS; ++x) {
     for(uint8_t y = 0; y < FIELD_ROWS; ++y) {
@@ -100,24 +108,26 @@ void render_field() {
   }
 }
 
+// Show the cursor
 void render_cursor() {
   Point cursor_position = Point(8 + (cursor.location.first << 4), cursor.location.second << 4);
   screen.sprite(cursor.sprite, cursor_position);
 }
 
+// Update state across the playing field
 void update_field() {
   for(uint8_t x = 0; x < FIELD_COLS; ++x) {
     for(uint8_t y = 0; y < FIELD_ROWS; ++y) {
       Sphere* sphere = field[x][y];
       if(sphere == nullptr) break;
 
-      if(sphere->frame > 0) { //Still animation
+      if(sphere->frame > 0) { // At rest animation
         sphere->frame -= 1;
-      } else if(sphere->state == Sphere::DELETE) { //Remove the sphere
+      } else if(sphere->state == Sphere::DELETE) { // Remove the sphere
         remove(x, y);
-      } else if(sphere->state == Sphere::MATCH && aligned(sphere)) { //Begin delete animation
+      } else if(sphere->state == Sphere::MATCH && aligned(sphere)) { // Begin delete animation
         animate_delete(x, y);
-      } else { //Animate spheres moving
+      } else { // Animate the spheres moving
         uint8_t expected_x = 8 + (x << 4);
         int8_t direction_x = sgn(expected_x - sphere->position.x);
         sphere->position.x += direction_x;
@@ -130,56 +140,77 @@ void update_field() {
   }
 }
 
-uint8_t clear_matches() {
+// Find all the horizontally matching rows of 3 or more
+uint8_t mark_matches_horiz(uint8_t x, uint8_t y) {
   uint8_t matched = 0;
+  Sphere* i = field[x][y];
 
-  for(uint8_t y = 0; y < FIELD_ROWS; ++y) {
-    for(uint8_t x = 0; x < FIELD_COLS; ++x) {
-      Sphere* i = field[x][y];
-      if(i == nullptr) break;
-      if(i->state != Sphere::NONE) break;
+  std::vector<uint8_t> match_horiz = {x};
+  for(uint8_t h = x + 1; h < FIELD_COLS; ++h) {
+    if(i->type == field[h][y]->type) match_horiz.push_back(h);
+    else break;
+  }
 
-      //Mark all horizontal matches
-      std::vector<uint8_t> match_horiz = {x};
-      for(uint8_t h = x + 1; h < FIELD_COLS; ++h) {
-        if(i->type == field[h][y]->type) match_horiz.push_back(h);
-        else break;
-      }
-      if(match_horiz.size() > 2) {
-        matched += match_horiz.size();
-        i->state = Sphere::MATCH;
-        Sphere* parent = i;
-        for(uint8_t h : match_horiz) {
-          Sphere* child = field[h][y];
-          parent->parent = true;
-          parent->child = {h, y};
-          parent = child;
-        }
-      }
-
-      //Mark all vertical matches
-      std::vector<uint8_t> match_vert = {y};
-      for(uint8_t v = y + 1; v < FIELD_ROWS; ++v) {
-        if(i->type == field[x][v]->type) match_vert.push_back(v);
-        else break;
-      }
-      if(match_vert.size() > 2) {
-        matched += match_horiz.size();
-        i->state = Sphere::MATCH;
-        Sphere* parent = i;
-        for(uint8_t v : match_vert) {
-          Sphere* child = field[x][v];
-          parent->parent = true;
-          parent->child = {x, v};
-          parent = child;
-        }
-      }
+  if(match_horiz.size() > 2) {
+    matched += match_horiz.size();
+    i->state = Sphere::MATCH;
+    Sphere* parent = i;
+    for(uint8_t h : match_horiz) {
+      Sphere* child = field[h][y];
+      parent->parent = true;
+      parent->child = {h, y};
+      parent = child;
     }
   }
 
   return matched;
 }
 
+// Find all the vertically matching rows of 3 or more
+uint8_t mark_matches_vert(uint8_t x, uint8_t y) {
+  uint8_t matched = 0;
+  Sphere* i = field[x][y];
+
+  std::vector<uint8_t> match_vert = {y};
+  for(uint8_t v = y + 1; v < FIELD_ROWS; ++v) {
+    if(i->type == field[x][v]->type) match_vert.push_back(v);
+    else break;
+  }
+
+  if(match_vert.size() > 2) {
+    matched += match_vert.size();
+    i->state = Sphere::MATCH;
+    Sphere* parent = i;
+
+    for(uint8_t v : match_vert) {
+      Sphere* child = field[x][v];
+      parent->parent = true;
+      parent->child = {x, v};
+      parent = child;
+    }
+  }
+
+  return matched;
+}
+
+// Find all the matching rows of 3 or more
+uint8_t mark_matches() {
+  uint8_t matched = 0;
+
+  for(uint8_t y = 0; y < FIELD_ROWS; ++y) {
+    for(uint8_t x = 0; x < FIELD_COLS; ++x) {
+      Sphere* sphere = field[x][y];
+      if(sphere == nullptr) break;
+      if(sphere->state != Sphere::NONE) break;
+      matched += mark_matches_horiz(x, y);
+      matched += mark_matches_vert(x, y);
+    }
+  }
+
+  return matched;
+}
+
+// Create a new play field
 void init() {
     set_screen_mode(ScreenMode::hires);
     screen.sprites = Surface::load(asset_sprites);
@@ -187,6 +218,7 @@ void init() {
     init_field();
 }
 
+// Render the screen
 void render(uint32_t time) {
     screen.alpha = 255;
     screen.mask = nullptr;
@@ -201,6 +233,7 @@ void render(uint32_t time) {
     screen.text("Score: " + std::to_string(score), minimal_font, Point(9, 224));
 }
 
+// Watch for user input, find matches, update field state
 void update(uint32_t time) {
   if(debounce_start < time && buttons.state) {
     debounce_start = time + DEBOUNCE_INTERVAL;
@@ -215,6 +248,6 @@ void update(uint32_t time) {
   if(buttons.pressed & Button::B) swap(cursor.location, {cursor.location.first, cursor.location.second + 1});
   if(buttons.pressed & Button::X) swap(cursor.location, {cursor.location.first, cursor.location.second - 1});
 
-  score += clear_matches();
+  score += mark_matches();
   update_field();
 }

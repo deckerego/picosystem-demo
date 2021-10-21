@@ -1,4 +1,3 @@
-#include <cstdlib>
 #include <cstdint>
 #include <vector>
 #include "field.hpp"
@@ -27,7 +26,7 @@ void Field::remove_all(uint8_t x, uint8_t y, uint8_t depth=1) {
   for(uint8_t rel_y = y; rel_y > 0; --rel_y) {
     field[x][rel_y] = field[x][rel_y - 1];
   }
-  field[x][0] = new Sphere(blit::Point(8 + (x << 4), -1 * depth * SPHERE_SIZE), rand() % TYPES_MAX);
+  field[x][0] = new Sphere(blit::Point(8 + (x << 4), -1 * depth * SPHERE_SIZE), blit::random() % TYPES_MAX);
   if(sphere->parent) remove_all(sphere->child.first, sphere->child.second, ++depth);
   delete sphere;
 }
@@ -42,7 +41,7 @@ void Field::disappear_all(uint8_t x, uint8_t y) {
 bool Field::aligned_horiz(Sphere* sphere) {
   if(! sphere->parent) return true;
   Sphere* child = field[sphere->child.first][sphere->child.second];
-  if(sphere->position.x == child->position.x && abs(sphere->position.y - child->position.y) == 16) {
+  if(sphere->position.x == child->position.x && (child->position.y - sphere->position.y) == SPHERE_SIZE) {
     return aligned_horiz(child);
   } else {
     return false;
@@ -53,7 +52,7 @@ bool Field::aligned_horiz(Sphere* sphere) {
 bool Field::aligned_vert(Sphere* sphere) {
   if(! sphere->parent) return true;
   Sphere* child = field[sphere->child.first][sphere->child.second];
-  if(sphere->position.y == child->position.y && abs(sphere->position.x - child->position.x) == 16) {
+  if(sphere->position.y == child->position.y && (child->position.x - sphere->position.x) == SPHERE_SIZE) {
     return aligned_vert(child);
   } else {
     return false;
@@ -150,20 +149,14 @@ void Field::update_field() {
       Sphere* sphere = field[x][y];
       if(sphere == nullptr) break;
 
-      if(sphere->frame > 0) { // At rest animation
-        sphere->frame -= 1;
-      } else if(sphere->state == Sphere::DELETE) { // Remove the sphere
+      if(sphere->state == Sphere::DELETE) {
         remove_all(x, y);
-      } else if(sphere->state == Sphere::MATCH && aligned(sphere)) { // Begin delete animation
+      } else if(sphere->state == Sphere::MATCH && aligned(sphere)) {
         disappear_all(x, y);
-      } else { // Animate the spheres moving
+      } else {
         uint8_t expected_x = 8 + (x << 4);
-        int8_t direction_x = sgn(expected_x - sphere->position.x);
-        sphere->position.x += direction_x;
-
         uint8_t expected_y = y << 4;
-        int8_t direction_y = sgn(expected_y - sphere->position.y);
-        sphere->position.y += direction_y;
+        sphere->move_towards(expected_x, expected_y);
       }
     }
   }
@@ -188,7 +181,7 @@ void Field::deserialize(std::pair<blit::Point, uint8_t> data[FIELD_COLS][FIELD_R
 void Field::create() {
   for(uint8_t x = 0; x < FIELD_COLS; ++x) {
     for(uint8_t y = 0; y < FIELD_ROWS; ++y) {
-      field[x][y] = new Sphere(blit::Point(8 + (x << 4), y << 4), rand() % TYPES_MAX);
+      field[x][y] = new Sphere(blit::Point(8 + (x << 4), y << 4), blit::random() % TYPES_MAX);
     }
   }
 }

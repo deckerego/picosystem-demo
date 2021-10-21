@@ -6,11 +6,6 @@
 const uint8_t FIELD_ROWS = 14;
 const uint8_t FIELD_COLS = 14;
 
-// Implementation of signum (returns 1, -1, 0)
-template <typename T> int sgn(T v) {
-    return (T(0) < v) - (v < T(0));
-}
-
 struct Field {
   Sphere* field[FIELD_COLS][FIELD_ROWS];
 

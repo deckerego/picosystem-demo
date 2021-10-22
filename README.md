@@ -2,6 +2,10 @@
 
 A Match 3 game to demo how to build games for the Pimoroni PicoSystem.
 
+The how's and why's of the code are being documented in the 
+[picosystem-demo Wiki](https://github.com/deckerego/picosystem-demo/wiki), 
+which should help provide some info on the 32blit SDK and how it is used to build the game. 
+
 ## Tools Used
 
 ### Artwork

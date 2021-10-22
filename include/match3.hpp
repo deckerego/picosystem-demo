@@ -8,7 +8,8 @@ const uint32_t MAX_GAME_TIME = 30 * 1000;
 
 struct SaveData {
   std::pair<blit::Point, uint8_t> field[FIELD_COLS][FIELD_ROWS];
-  int32_t score = 0;
+  uint32_t current_score = 0;
+  uint32_t best_score = 0;
   uint32_t time_elapsed = 0;
 };
 

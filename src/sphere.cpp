@@ -12,7 +12,7 @@ blit::Rect Sphere::next_sprite() {
 
 void Sphere::disappear() {
   state = Sphere::VANISH;
-  frame = 6;
+  frame = 5;
 }
 
 void Sphere::move_towards(uint8_t x, uint8_t y) {

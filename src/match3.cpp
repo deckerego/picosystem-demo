@@ -9,9 +9,8 @@ TileMap* environment;
 Cursor cursor = Cursor({0, 0});
 Field field = Field();
 uint32_t debounce_start = 0;
-uint32_t score = 0;
-uint32_t time_elapsed = 0;
-uint32_t last_update = 0;
+uint32_t current_score, best_score = 0;
+uint32_t time_elapsed, last_update = 0;
 
 // Blit field sprites
 void render_field() {
@@ -41,7 +40,8 @@ void render_time() {
 void render_score() {
   Pen oldPen = screen.pen;
   screen.pen = Pen(0xFF, 0xFF, 0xFF);
-  screen.text("Score: " + std::to_string(score), minimal_font, Point(9, 228));
+  screen.text("Score: " + std::to_string(current_score), minimal_font, Point(9, 224));
+  screen.text("Best: " + std::to_string(best_score), minimal_font, Point(9, 232));
   screen.pen = oldPen;
 }
 
@@ -73,8 +73,9 @@ void update(uint32_t time) {
   last_update = time;
   if(time_elapsed > MAX_GAME_TIME) {
     time_elapsed = 0;
-    score = 0;
+    current_score = 0;
     field.create();
+    save_game();
   }
 
   if(debounce_start < time) {
@@ -98,8 +99,8 @@ void update(uint32_t time) {
   field.update_field();
 
   if(points > 0) {
-    score += points;
-    save_game();
+    current_score += points;
+    if(current_score > best_score) best_score = current_score;
   }
 }
 
@@ -107,7 +108,8 @@ void update(uint32_t time) {
 void save_game() {
   SaveData data = SaveData();
   data.time_elapsed = time_elapsed;
-  data.score = score;
+  data.current_score = current_score;
+  data.best_score = best_score;
   field.serialize(data.field);
   write_save(data);
 }
@@ -116,11 +118,13 @@ void save_game() {
 void restore_game() {
   SaveData data;
   if(read_save(data)) { // We have a save file
-    score = data.score;
+    current_score = data.current_score;
+    best_score = data.best_score;
     time_elapsed = data.time_elapsed;
     field.deserialize(data.field);
   } else { // No save file, start from scratch
-    score = 0;
+    current_score = 0;
+    best_score = 0;
     time_elapsed = 0;
     field.create();
   }

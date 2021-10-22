@@ -10,7 +10,7 @@ which should help provide some info on the 32blit SDK and how it is used to buil
 
 ### Artwork
 
-Krita was used to create pixel art for all assets.
+[Krita](https://krita.org/) was used to create pixel art for all assets.
 
 ### Maps
 

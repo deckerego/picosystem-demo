@@ -26,7 +26,7 @@ void Field::remove_all(uint8_t x, uint8_t y, uint8_t depth=1) {
   for(uint8_t rel_y = y; rel_y > 0; --rel_y) {
     field[x][rel_y] = field[x][rel_y - 1];
   }
-  field[x][0] = new Sphere(blit::Point(8 + (x << 4), -1 * depth * SPHERE_SIZE), blit::random() % TYPES_MAX);
+  field[x][0] = new Sphere(blit::Point(8 + (x * 16), -1 * depth * SPHERE_SIZE), blit::random() % TYPES_MAX);
   if(sphere->parent) remove_all(sphere->child.first, sphere->child.second, ++depth);
   delete sphere;
 }
@@ -154,8 +154,8 @@ void Field::update_field() {
       } else if(sphere->state == Sphere::MATCH && aligned(sphere)) {
         disappear_all(x, y);
       } else {
-        uint8_t expected_x = 8 + (x << 4);
-        uint8_t expected_y = y << 4;
+        uint8_t expected_x = 8 + (x * 16);
+        uint8_t expected_y = y * 16;
         sphere->move_towards(expected_x, expected_y);
       }
     }
@@ -181,7 +181,7 @@ void Field::deserialize(std::pair<blit::Point, uint8_t> data[FIELD_COLS][FIELD_R
 void Field::create() {
   for(uint8_t x = 0; x < FIELD_COLS; ++x) {
     for(uint8_t y = 0; y < FIELD_ROWS; ++y) {
-      field[x][y] = new Sphere(blit::Point(8 + (x << 4), y << 4), blit::random() % TYPES_MAX);
+      field[x][y] = new Sphere(blit::Point(8 + (x * 16), y * 16), blit::random() % TYPES_MAX);
     }
   }
 }

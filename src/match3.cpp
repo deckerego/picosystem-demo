@@ -23,7 +23,7 @@ void render_field() {
 
 // Show the cursor
 void render_cursor() {
-  Point cursor_position = Point(8 + (cursor.location.first << 4), cursor.location.second << 4);
+  Point cursor_position = Point(8 + (cursor.location.first * 16), cursor.location.second * 16);
   screen.sprite(cursor.sprite, cursor_position);
 }
 

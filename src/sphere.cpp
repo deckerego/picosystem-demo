@@ -2,11 +2,11 @@
 
 blit::Rect Sphere::next_sprite() {
   if(state == Sphere::VANISH) {
-    blit::Rect sprite = blit::Rect((frame + 2) << 1, 2, 2, 2);
+    blit::Rect sprite = blit::Rect((frame + 2) * 2, 2, 2, 2);
     if(frame-- == 0) state = Sphere::DELETE;
     return sprite;
   } else {
-    return blit::Rect(type << 1, 0, 2, 2);
+    return blit::Rect(type * 2, 0, 2, 2);
   }
 }
 

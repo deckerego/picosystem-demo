@@ -32,7 +32,7 @@ don't plan on using xcode). After that the process will be:
 1. Installing 32blit tools: `pip3 install 32blit`
 1. Installing the ARM cross-compile toolchain from https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/gnu-rm/downloads (this could be done from brew, but I prefer a system-wide install)
 1. Add the ARM tools directory to your current PATH. As an example, you can add `~/.zprofile` and add `export PATH="$PATH:/System/Volumes/Data/Applications/ARM/bin"` at the end for the default install.
-1. Clone 32blit SDK: git clone https://github.com/raspberrypi/32blit-sdk.git
+1. Clone 32blit SDK: git clone https://github.com/32blit/32blit-sdk.git
 1. Change into the cloned directory and update submodules as needed: `git submodule update --init`
 1. Clone Pico SDK: git clone -b master https://github.com/raspberrypi/pico-sdk.git
 1. Change into the cloned directory and update submodules as needed: `git submodule update --init`
